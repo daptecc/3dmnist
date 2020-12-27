@@ -1,0 +1,11 @@
+batch_size: 64
+epochs: 80
+eval_every_n_epochs: 1
+fine_tune_from: None
+log_every_n_steps: 200
+fp16_precision: False
+
+dataset:
+  path: 'data/full_dataset_vectors.h5'
+  num_classes: 10
+  num_workers: 4
