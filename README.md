@@ -1,6 +1,6 @@
 ### Project Description
 
-This is a test to classify 3D MNIST digits in Keras and Pytorch. The method uses a simple architecture of 3D convolutions followed by fully connected layers to downsample voxel grids to a lower dimension space.
+This is a test to classify 3D MNIST digits in Keras and Pytorch. The method uses a simple architecture consisting of two blocks of 3D convolutions/ReLU/BatchNorm followed by fully connected layers to downsample voxel grids to a lower dimension space.
 
 #### Dataset
 
@@ -41,7 +41,16 @@ Estimated Total Size (MB): 19.14
 
 #### Results
 - Train and validation losses
+![Train loss](images/train_loss.png)
+![Validation loss](images/val_loss.png)
+
 - Train and validation accuracies
+![Train accuracy](images/train_acc.png)
+![Validation accuracy](images/val_acc.png)
+
+Observed from the plots above, the model has converged with an accuracy of **91%** on the training data and a validation accuracy of **78%**. Training was done over 80 epochs with a default learning rate of 1e-3 using an Adam optimizer and reduced by a factor of 0.5 on plateau every three epochs.
+
+Test accuracy is **75%**.
 
 #### Dependencies
 - PyTorch 1.3.1

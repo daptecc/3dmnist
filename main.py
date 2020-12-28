@@ -43,8 +43,8 @@ class MNIST3dClassifier(object):
 
     def setup_data(self, path):
         with h5py.File(path, 'r') as hf:
-            X_train = hf["X_train"][:]
-            y_train = hf["y_train"][:]
+            X_train = hf['X_train'][:]
+            y_train = hf['y_train'][:]
         
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.15,
                                                           random_state=1, shuffle=True)
@@ -77,7 +77,7 @@ class MNIST3dClassifier(object):
     
     
     def train(self):
-        train_loader, val_loader = self.setup_data(self.config['dataset']['path'])        
+        train_loader, val_loader = self.setup_data(self.config['dataset']['path'])
 
         model = MNIST3dModel(num_classes=self.config['dataset']['num_classes'])
         model.to(self.device)
@@ -199,3 +199,39 @@ class MNIST3dClassifier(object):
             print("Pre-trained weights not found. Training from scratch.")
 
         return model
+
+
+    def setup_test(self, path):
+        with h5py.File(path, 'r') as hf:
+            X_test = hf['X_test'][:]
+            y_test = hf['y_test'][:]
+        test_loader = get_dataloaders(X_data=X_test, y_data=y_test)
+        return test_loader
+
+    def test(self):
+        test_loader = self.setup_test(self.config['dataset']['path'])
+        
+        model = MNIST3dModel(num_classes=self.config['dataset']['num_classes'])
+        model.to(self.device)
+        
+        model_checkpoints_folder = os.path.join(self.writer.log_dir, 'checkpoints')
+        state_dict = torch.load(os.path.join(model_checkpoints_folder, 'model.pth'))
+        model.load_state_dict(state_dict)
+
+        criterion = torch.nn.CrossEntropyLoss()
+
+        with torch.no_grad():
+            model.eval()
+
+            test_acc = 0.0
+            counter = 0
+            for data, targets in test_loader:
+                data = data.to(self.device)
+                targets = targets.to(self.device)
+
+                _, acc = self._step(model, criterion, data, targets)
+                test_acc += acc.item()
+                counter += 1
+            test_acc /= counter
+
+        print(f'\n\nTest accuracy: {test_acc:.2f}')

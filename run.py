@@ -7,6 +7,7 @@ def main():
     
     clf = MNIST3dClassifier(config)
     clf.train()
+    clf.test()
 
 
 if __name__ == "__main__":

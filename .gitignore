@@ -3,3 +3,4 @@ data
 weights
 runs
 __pycache__
+.ipynb_checkpoints
