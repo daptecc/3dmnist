@@ -35,6 +35,7 @@ class MNIST3dClassifier(object):
         self.config = config
         self.device = self._get_device()
         self.writer = SummaryWriter()
+        self.writer_val = SummaryWriter(f'{self.writer.log_dir}_val')
         self.train_loss_metric = AverageMeter()
         self.train_acc_metric = AverageMeter()
         self.val_loss_metric = AverageMeter()
@@ -99,7 +100,6 @@ class MNIST3dClassifier(object):
         _save_config_file(model_checkpoints_folder)
 
         n_iter = 0
-        valid_n_iter = 0
         best_valid_loss = np.inf
 
         for epoch_counter in range(1, self.config['epochs'] + 1):
@@ -115,10 +115,10 @@ class MNIST3dClassifier(object):
                 self.train_acc_metric.update(acc.item())
                 
                 if n_iter % self.config['log_every_n_steps'] == 0:
-                    self.writer.add_scalar('train_loss',
+                    self.writer.add_scalar('loss',
                                            self.train_loss_metric.avg,
                                            global_step=n_iter)
-                    self.writer.add_scalar('train_acc',
+                    self.writer.add_scalar('acc',
                                            self.train_acc_metric.avg,
                                            global_step=n_iter)
                     print('[{}/{}] loss: {:.2f}, acc {:.2f}'.format(epoch_counter,
@@ -147,17 +147,16 @@ class MNIST3dClassifier(object):
                     best_valid_loss = valid_loss
                     torch.save(model.state_dict(), os.path.join(model_checkpoints_folder, 'model.pth'))
 
-                self.writer.add_scalar('validation_loss',
+                self.writer_val.add_scalar('loss',
                                        self.val_loss_metric.avg,
-                                       global_step=valid_n_iter)
-                self.writer.add_scalar('validation_acc',
+                                       global_step=n_iter)
+                self.writer_val.add_scalar('acc',
                                        self.val_acc_metric.avg,
-                                       global_step=valid_n_iter)
+                                       global_step=n_iter)
                 print('[{}/{}] val_loss: {:.2f}, val_acc {:.2f}'.format(epoch_counter,
                                                                 self.config['epochs'],
                                                                 self.val_loss_metric.avg,
                                                                 self.val_acc_metric.avg))
-                valid_n_iter += 1
 
             scheduler.step(valid_loss)
             self.writer.add_scalar('lr_reduce_on_plateau',

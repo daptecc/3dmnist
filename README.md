@@ -41,12 +41,10 @@ Estimated Total Size (MB): 19.14
 
 #### Results
 - Train and validation losses
-<img src="images/train_loss.png" width="256">
-<img src="images/val_loss.png" width="256">
+<img src="images/loss.png" width="256">
 
 - Train and validation accuracies
-<img src="images/train_acc.png" width="256">
-<img src="images/val_acc.png" width="256">
+<img src="images/acc.png" width="256">
 
 Observed from the plots above, the model has converged with an accuracy of **91%** on the training data and a validation accuracy of **78%**. Training was done over 80 epochs with a default learning rate of 1e-3 using an Adam optimizer and reduced by a factor of 0.5 on plateau every three epochs.
 
